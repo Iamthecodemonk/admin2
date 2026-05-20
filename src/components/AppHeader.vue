@@ -1,7 +1,13 @@
 <script setup>
+import { ref } from 'vue'
 import { getStoredUser, logout } from '../services/api'
 
 const user = getStoredUser()
+const openMenu = ref('')
+
+function toggleMenu(menu) {
+  openMenu.value = openMenu.value === menu ? '' : menu
+}
 
 async function handleLogout() {
   await logout()
@@ -42,15 +48,15 @@ async function handleLogout() {
                 <li>
                   <a href="#/moderate-posts">Moderate Posts</a>
                 </li>
-                <li>
-                  <a href="#">Jobs <i class="la la-angle-down fs-11"></i></a>
+                <li :class="{ 'menu-open': openMenu === 'jobs' }">
+                  <a href="" @click.prevent="toggleMenu('jobs')">Jobs <i class="la la-angle-down fs-11"></i></a>
                   <ul class="dropdown-menu-item">
                     <li><a href="#/jobs-awaiting-approval">Jobs awaiting approval</a></li>
                     <li><a href="#/manage-active-jobs">Manage active jobs</a></li>
                   </ul>
                 </li>
-                <li>
-                  <a href="#">Users <i class="la la-angle-down fs-11"></i></a>
+                <li :class="{ 'menu-open': openMenu === 'users' }">
+                  <a href="" @click.prevent="toggleMenu('users')">Users <i class="la la-angle-down fs-11"></i></a>
                   <ul class="dropdown-menu-item">
                     <li><a href="#/manage-users">Manage users</a></li>
                     <li><a href="#/manage-admin-users">Manage Admin users</a></li>

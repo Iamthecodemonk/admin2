@@ -135,6 +135,16 @@ table .dropdown-menu .dropdown-item {
   white-space: nowrap;
 }
 
+.menu-bar > ul > li.menu-open .dropdown-menu-item {
+  top: 80px;
+  opacity: 1;
+  visibility: visible;
+}
+
+.menu--bar > ul > li.menu-open .dropdown-menu-item {
+  top: 60px;
+}
+
 @media screen and (max-width: 300px) {
   span.psw {
     display: block;
