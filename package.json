@@ -1,0 +1,35 @@
+{
+  "name": "disilab",
+  "version": "1.0.0",
+  "description": "Social Questions and Answers HTML Template",
+  "main": "src/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kamran-hussen/disilab.git"
+  },
+  "author": "Kamran Ahmed",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kamran-hussen/disilab/issues"
+  },
+  "homepage": "https://github.com/kamran-hussen/disilab#readme",
+  "devDependencies": {
+    "browser-sync": "^2.26.7",
+    "gulp": "^4.0.2",
+    "gulp-sass": "^5.1.0",
+    "sass": "^1.71.1"
+  },
+  "dependencies": {
+    "@vitejs/plugin-vue": "^5.2.3",
+    "vite": "^6.3.5",
+    "vue": "^3.5.14",
+    "sweetalert2": "^9.7.1"
+  }
+}
