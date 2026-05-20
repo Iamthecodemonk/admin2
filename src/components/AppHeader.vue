@@ -21,7 +21,7 @@ async function handleLogout() {
       <div class="row align-items-center">
         <div class="col-lg-1">
           <div class="logo-box">
-            <a href="#/login" class="logo">Admin</a>
+            <a href="#/home" class="logo">Admin</a>
             <div class="user-action">
               <div class="search-menu-toggle icon-element icon-element-xs shadow-sm me-1" data-bs-toggle="tooltip" data-placement="top" title="Search">
                 <i class="la la-search"></i>

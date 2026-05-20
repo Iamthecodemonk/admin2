@@ -89,7 +89,6 @@ onMounted(load)
       <br><br>
 
       <h3>All Users Table</h3>
-      <p v-if="loading" class="text-muted">Loading users...</p>
       <p v-if="error" class="alert alert-danger">{{ error }}</p>
       <div class="table-responsive">
         <table class="table table-bordered">
@@ -106,29 +105,37 @@ onMounted(load)
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(user, index) in filteredUsers" :key="user.id">
-              <td>{{ index + 1 }}</td>
-              <td><a href="#">{{ displayName(user) }}</a></td>
-              <td>{{ profileValue(user, 'country') }}</td>
-              <td>{{ profileValue(user, 'state') }}</td>
-              <td>{{ profileValue(user, 'jobTitle') || profileValue(user, 'job_title') }}</td>
-              <td>
-                <select class="form-select">
-                  <option v-for="skill in skills(user)" :key="skill">{{ skill }}</option>
-                  <option v-if="skills(user).length === 0">No skills</option>
-                </select>
-              </td>
-              <td>{{ user.totalScore || user.total_score || user.score || 0 }}</td>
-              <td>
-                <div class="dropdown">
-                  <i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" @click.prevent="suspend(user, 'suspended')">Suspend</a></li>
-                    <li><a class="dropdown-item" href="#" @click.prevent="suspend(user, 'active')">Unsuspend</a></li>
-                  </ul>
-                </div>
+            <tr v-if="loading">
+              <td colspan="8" class="text-center py-4 text-muted">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Loading users...
               </td>
             </tr>
+            <template v-else>
+              <tr v-for="(user, index) in filteredUsers" :key="user.id">
+                <td>{{ index + 1 }}</td>
+                <td><a href="" @click.prevent>{{ displayName(user) }}</a></td>
+                <td>{{ profileValue(user, 'country') }}</td>
+                <td>{{ profileValue(user, 'state') }}</td>
+                <td>{{ profileValue(user, 'jobTitle') || profileValue(user, 'job_title') }}</td>
+                <td>
+                  <select class="form-select">
+                    <option v-for="skill in skills(user)" :key="skill">{{ skill }}</option>
+                    <option v-if="skills(user).length === 0">No skills</option>
+                  </select>
+                </td>
+                <td>{{ user.totalScore || user.total_score || user.score || 0 }}</td>
+                <td>
+                  <div class="dropdown">
+                    <i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="" @click.prevent="suspend(user, 'suspended')">Suspend</a></li>
+                      <li><a class="dropdown-item" href="" @click.prevent="suspend(user, 'active')">Unsuspend</a></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            </template>
             <tr v-if="!loading && filteredUsers.length === 0">
               <td colspan="8">No users found.</td>
             </tr>

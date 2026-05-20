@@ -14,7 +14,8 @@ const { items: posts, loading, error, load } = useApiList('/api/posts', { per_pa
 const filteredPosts = computed(() => {
   const q = search.value.toLowerCase()
   return posts.value.filter((post) => {
-    const text = [post.id, post.title, post.content, post.status, post.reportReason, post.reason].filter(Boolean).join(' ').toLowerCase()
+    if (!isReportedPost(post)) return false
+    const text = [post.id, post.title, post.content, post.status, reportReason(post)].filter(Boolean).join(' ').toLowerCase()
     const isReviewed = ['approved', 'active', 'live'].includes(post.status)
     return (!q || text.includes(q)) && (reviewed.value === 'reviewed' ? isReviewed : !isReviewed)
   })
@@ -59,6 +60,54 @@ function posterId(post) {
 
 function postUserId(post) {
   return posterId(post)
+}
+
+function firstReport(post) {
+  if (Array.isArray(post.reports) && post.reports.length) return post.reports[0]
+  if (Array.isArray(post.report_reasons) && post.report_reasons.length) return post.report_reasons[0]
+  return post.report || post.latestReport || post.latest_report || {}
+}
+
+function reportCount(post) {
+  return Number(
+    post.reports_count ||
+    post.report_count ||
+    post.reportCount ||
+    post.reportsCount ||
+    0,
+  )
+}
+
+function isReportedPost(post) {
+  return Boolean(
+    post.is_report ||
+    post.isReported ||
+    post.reported ||
+    post.report_reason_id ||
+    post.reportReason ||
+    post.report_reason ||
+    post.reason ||
+    post.reported_at ||
+    reportCount(post) > 0 ||
+    Object.keys(firstReport(post)).length,
+  )
+}
+
+function reportReason(post) {
+  const report = firstReport(post)
+  return post.reportReason ||
+    post.report_reason ||
+    post.reason ||
+    post.report_reason_name ||
+    post.reportReasonName ||
+    report.reason ||
+    report.name ||
+    report.reportReason ||
+    report.report_reason ||
+    report.report_reason_name ||
+    post.status ||
+    post.visibility ||
+    ''
 }
 
 function posterName(post) {
@@ -188,7 +237,6 @@ onMounted(loadPosts)
       <br><br><hr><br><br>
 
       <h3>Report Table</h3>
-      <p v-if="loading" class="text-muted">Loading posts...</p>
       <p v-if="error" class="alert alert-danger">{{ error }}</p>
       <div class="table-responsive">
         <table class="table table-bordered">
@@ -196,10 +244,18 @@ onMounted(loadPosts)
             <tr><th>#</th><th>post id</th><th>name (profile link)</th><th>rule violated</th><th>Post <br>Content</th><th>post link</th><th>image(if any)</th><th>Action</th></tr>
           </thead>
           <tbody>
-            <tr v-for="(post, index) in filteredPosts" :key="post.id">
-              <td>{{ index + 1 }}</td><td>{{ post.id }}</td><td><a href="#">{{ posterName(post) }}</a></td><td>{{ post.reportReason || post.reason || post.status || post.visibility }}</td><td>{{ post.content || post.title }}</td><td><a href="#">Post link</a></td><td><a v-if="firstPostImage(post)" :href="firstPostImage(post)" target="_blank" rel="noopener noreferrer">Click here to view image</a></td>
-              <td><div class="dropdown"><i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i><ul class="dropdown-menu"><li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editPost" @click="prepareEdit(post)">Edit</a></li><li><a class="dropdown-item" href="#" @click.prevent="updatePostModeration(post, 'suspended')">Suspend</a></li><li><a class="dropdown-item" href="#" @click.prevent="updatePostModeration(post, 'active')">Unsuspend</a></li><li><a class="dropdown-item" href="#" @click.prevent="approvePost(post)">Approve</a></li></ul></div></td>
+            <tr v-if="loading">
+              <td colspan="8" class="text-center py-4 text-muted">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Loading reported posts...
+              </td>
             </tr>
+            <template v-else>
+              <tr v-for="(post, index) in filteredPosts" :key="post.id">
+                <td>{{ index + 1 }}</td><td>{{ post.id }}</td><td><a href="" @click.prevent>{{ posterName(post) }}</a></td><td>{{ reportReason(post) }}</td><td>{{ post.content || post.title }}</td><td><a href="" @click.prevent>Post link</a></td><td><a v-if="firstPostImage(post)" :href="firstPostImage(post)" target="_blank" rel="noopener noreferrer">Click here to view image</a></td>
+                <td><div class="dropdown"><i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i><ul class="dropdown-menu"><li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#editPost" @click.prevent="prepareEdit(post)">Edit</a></li><li><a class="dropdown-item" href="" @click.prevent="updatePostModeration(post, 'suspended')">Suspend</a></li><li><a class="dropdown-item" href="" @click.prevent="updatePostModeration(post, 'active')">Unsuspend</a></li><li><a class="dropdown-item" href="" @click.prevent="approvePost(post)">Approve</a></li></ul></div></td>
+              </tr>
+            </template>
             <tr v-if="!loading && filteredPosts.length === 0"><td colspan="8">No posts found.</td></tr>
           </tbody>
         </table>

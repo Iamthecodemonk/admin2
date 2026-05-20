@@ -186,10 +186,10 @@ onMounted(async () => {
               <div class="dropdown">
                 <i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editCommunity" @click="prepareEdit(community)">Edit</a></li>
-                  <li><a class="dropdown-item" href="#" @click.prevent="setCommunityActive(community, false)">Suspend</a></li>
-                  <li><a class="dropdown-item" href="#" @click.prevent="setCommunityActive(community, true)">Unsuspend</a></li>
-                  <li><a class="dropdown-item" href="#" @click.prevent="deleteCommunity(community)">Delete</a></li>
+                  <li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#editCommunity" @click.prevent="prepareEdit(community)">Edit</a></li>
+                  <li><a class="dropdown-item" href="" @click.prevent="setCommunityActive(community, false)">Suspend</a></li>
+                  <li><a class="dropdown-item" href="" @click.prevent="setCommunityActive(community, true)">Unsuspend</a></li>
+                  <li><a class="dropdown-item" href="" @click.prevent="deleteCommunity(community)">Delete</a></li>
                 </ul>
               </div>
             </td>

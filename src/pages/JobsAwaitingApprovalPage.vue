@@ -108,8 +108,8 @@ watch(type, loadCurrentJobs)
           <tbody>
             <tr v-for="(job, index) in filteredJobs" :key="job.id">
               <td>{{ index + 1 }}</td>
-              <td><a href="#">{{ posterName(job) }}</a></td>
-              <td><a href="#">{{ job.companyName }}</a></td>
+              <td><a href="" @click.prevent>{{ posterName(job) }}</a></td>
+              <td><a href="" @click.prevent>{{ job.companyName }}</a></td>
               <td>{{ job.location }}</td>
               <td>{{ job.applicationEmail || job.senderEmail }}</td>
               <td>{{ job.status }}</td>
@@ -117,10 +117,10 @@ watch(type, loadCurrentJobs)
                 <div class="dropdown">
                   <i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i>
                   <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" @click.prevent="updateStatus(job, 'approved')">Approve</a></li>
-                    <li><a class="dropdown-item" href="#" @click.prevent="updateStatus(job, 'suspended')">Suspend</a></li>
-                    <li><a class="dropdown-item" href="#" @click.prevent="updateStatus(job, 'active')">Unsuspend</a></li>
-                    <li><a class="dropdown-item" href="#" @click.prevent="updateStatus(job, 'deleted')">Delete</a></li>
+                    <li><a class="dropdown-item" href="" @click.prevent="updateStatus(job, 'approved')">Approve</a></li>
+                    <li><a class="dropdown-item" href="" @click.prevent="updateStatus(job, 'suspended')">Suspend</a></li>
+                    <li><a class="dropdown-item" href="" @click.prevent="updateStatus(job, 'active')">Unsuspend</a></li>
+                    <li><a class="dropdown-item" href="" @click.prevent="updateStatus(job, 'deleted')">Delete</a></li>
                   </ul>
                 </div>
               </td>

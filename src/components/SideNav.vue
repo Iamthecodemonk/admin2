@@ -15,8 +15,8 @@
     <div class="dropdown-container">
       <a href="#/jobs-awaiting-approval">Jobs awaiting approval</a>
       <a href="#/manage-active-jobs">Manage active jobs</a>
-      <a href="#">View in-active jobs</a>
+      <a href="" @click.prevent>View in-active jobs</a>
     </div>
-    <a href="#contact">Search</a>
+    <a href="" @click.prevent>Search</a>
   </div>
 </template>

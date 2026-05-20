@@ -33,7 +33,8 @@ const pages = {
 
 const resolveRoute = () => {
   const route = window.location.hash.replace(/^#\/?/, '')
-  return pages[route] ? route : 'login'
+  if (pages[route]) return route
+  return getToken() ? 'home' : 'login'
 }
 
 const currentRoute = ref(resolveRoute())

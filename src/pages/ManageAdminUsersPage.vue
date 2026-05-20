@@ -70,7 +70,7 @@ onMounted(load)
         <tbody>
           <tr v-for="(user, index) in users" :key="user.id">
             <td>{{ index + 1 }}</td><td>{{ user.name || user.username }}</td><td>{{ user.phone || user.profile?.phone }}</td><td>{{ user.email }}</td><td>{{ user.role || user.permission }}</td>
-            <td><div class="dropdown"><i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i><ul class="dropdown-menu"><li><a class="dropdown-item" href="#" @click.prevent="updateUser(user, 'suspended')">suspend</a></li><li><a class="dropdown-item" href="#" @click.prevent="updateUser(user, 'active')">un-suspend</a></li></ul></div></td>
+            <td><div class="dropdown"><i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i><ul class="dropdown-menu"><li><a class="dropdown-item" href="" @click.prevent="updateUser(user, 'suspended')">suspend</a></li><li><a class="dropdown-item" href="" @click.prevent="updateUser(user, 'active')">un-suspend</a></li></ul></div></td>
           </tr>
         </tbody>
       </table>

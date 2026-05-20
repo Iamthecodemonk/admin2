@@ -182,9 +182,9 @@ onMounted(loadAll)
                       <div class="dropdown">
                         <i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i>
                         <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#" @click.prevent="updateLocationStatus(row, 'suspended')">Suspend</a></li>
-                          <li><a class="dropdown-item" href="#" @click.prevent="updateLocationStatus(row, 'active')">Unsuspend</a></li>
-                          <li><a class="dropdown-item" href="#" @click.prevent="deleteLocation(row)">Delete</a></li>
+                          <li><a class="dropdown-item" href="" @click.prevent="updateLocationStatus(row, 'suspended')">Suspend</a></li>
+                          <li><a class="dropdown-item" href="" @click.prevent="updateLocationStatus(row, 'active')">Unsuspend</a></li>
+                          <li><a class="dropdown-item" href="" @click.prevent="deleteLocation(row)">Delete</a></li>
                         </ul>
                       </div>
                     </td>
@@ -217,9 +217,9 @@ onMounted(loadAll)
                       <div class="dropdown">
                         <i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i>
                         <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#" @click.prevent="updateSiteStatus(row, 'suspended')">Suspend</a></li>
-                          <li><a class="dropdown-item" href="#" @click.prevent="updateSiteStatus(row, 'active')">Unsuspend</a></li>
-                          <li><a class="dropdown-item" href="#" @click.prevent="deleteSite(row)">Delete</a></li>
+                          <li><a class="dropdown-item" href="" @click.prevent="updateSiteStatus(row, 'suspended')">Suspend</a></li>
+                          <li><a class="dropdown-item" href="" @click.prevent="updateSiteStatus(row, 'active')">Unsuspend</a></li>
+                          <li><a class="dropdown-item" href="" @click.prevent="deleteSite(row)">Delete</a></li>
                         </ul>
                       </div>
                     </td>
@@ -284,7 +284,7 @@ onMounted(loadAll)
           <tbody>
             <tr v-for="(row, index) in adverts.items.value" :key="row.id">
               <td>{{ index + 1 }}</td><td>{{ advertLocation(row) }}</td><td>{{ row.duration }}</td><td>{{ advertSite(row) }}</td><td><a :href="row.linkUrl" target="_blank" rel="noopener noreferrer">{{ row.linkUrl }}</a></td><td><a v-if="advertImage(row)" :href="advertImage(row)" target="_blank" rel="noopener noreferrer">Click here to view image</a></td><td>{{ row.textAbove || row.textBelow }}</td><td>{{ row.ownerName }}</td><td>{{ row.ownerPhone || row.ownerContact }}</td><td>{{ row.approvedBy }}</td><td>{{ row.status }}</td>
-              <td><div class="dropdown"><i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i><ul class="dropdown-menu"><li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editAdvert" @click="prepareEdit(row)">Edit</a></li><li><a class="dropdown-item" href="#" @click.prevent="updateStatus(row, 'suspended')">Suspend</a></li><li><a class="dropdown-item" href="#" @click.prevent="updateStatus(row, 'active')">Unsuspend</a></li><li><a class="dropdown-item" href="#" @click.prevent="updateStatus(row, 'deleted')">Delete</a></li></ul></div></td>
+              <td><div class="dropdown"><i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i><ul class="dropdown-menu"><li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#editAdvert" @click.prevent="prepareEdit(row)">Edit</a></li><li><a class="dropdown-item" href="" @click.prevent="updateStatus(row, 'suspended')">Suspend</a></li><li><a class="dropdown-item" href="" @click.prevent="updateStatus(row, 'active')">Unsuspend</a></li><li><a class="dropdown-item" href="" @click.prevent="updateStatus(row, 'deleted')">Delete</a></li></ul></div></td>
             </tr>
           </tbody>
         </table>
