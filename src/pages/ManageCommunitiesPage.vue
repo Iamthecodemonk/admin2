@@ -1,13 +1,16 @@
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import AppHeader from '../components/AppHeader.vue'
 import { apiRequest } from '../services/api'
 import { useApiList } from '../composables/useApiList'
+import lineAwesomeCss from '../../css/line-awesome.css?raw'
 
 const { items: communities, loading, error, load } = useApiList('/api/communities', { per_page: 50 })
 const saving = ref(false)
 const message = ref('')
 const editMessage = ref('')
+const iconSearch = ref('')
+const editIconSearch = ref('')
 const form = reactive({
   name: '',
   description: '',
@@ -22,6 +25,21 @@ const editForm = reactive({
   icon: '',
   type: 'Horizontal',
 })
+const brandIconNames = new Set(
+  [...lineAwesomeCss.matchAll(/\.la\.la-([a-z0-9-]+)\{font-family:'Line Awesome Brands'/g)]
+    .map((match) => `la-${match[1]}`),
+)
+const lineIcons = [...new Set(
+  [...lineAwesomeCss.matchAll(/\.la-([a-z0-9][a-z0-9-]*):before/g)]
+    .map((match) => `la-${match[1]}`),
+)]
+  .sort((a, b) => a.localeCompare(b))
+  .map((label) => ({
+    label,
+    value: `${brandIconNames.has(label) ? 'lab' : 'las'} ${label}`,
+  }))
+const filteredLineIcons = computed(() => filterIconOptions(iconSearch.value))
+const filteredEditLineIcons = computed(() => filterIconOptions(editIconSearch.value))
 
 function uiTypeToApi(type) {
   return type === 'Vertical' ? 'community' : 'public'
@@ -33,8 +51,38 @@ function apiTypeToUi(value) {
   return 'Horizontal'
 }
 
+function normalizeIconClass(value) {
+  if (!value) return 'las la-th'
+  const classMatch = String(value).match(/class=(?:"|')?([^"'>]+)/i)
+  const iconClass = classMatch ? classMatch[1] : String(value)
+  const label = iconLabel(iconClass)
+  if (iconClass.includes('la-')) {
+    return iconClass.includes('las ') || iconClass.includes('lar ') || iconClass.includes('lab ') || iconClass.includes('la ')
+      ? iconClass
+      : `${brandIconNames.has(label) ? 'lab' : 'las'} ${label}`
+  }
+  return 'las la-th'
+}
+
+function iconLabel(value) {
+  const classMatch = String(value || '').match(/class=(?:"|')?([^"'>]+)/i)
+  return (classMatch ? classMatch[1] : String(value || '')).split(/\s+/).find((className) => className.startsWith('la-')) || 'la-th'
+}
+
+function filterIconOptions(search) {
+  const query = search.trim().toLowerCase()
+  if (!query) return lineIcons
+  return lineIcons.filter((icon) => icon.label.includes(query))
+}
+
+function selectIcon(target, value, isEdit = false) {
+  target.icon = value
+  if (isEdit) editIconSearch.value = ''
+  else iconSearch.value = ''
+}
+
 function communityIcon(community) {
-  return community.icon || community.iconClass || 'las la-th'
+  return normalizeIconClass(community.icon || community.iconClass)
 }
 
 async function saveCommunity() {
@@ -46,7 +94,7 @@ async function saveCommunity() {
       body: {
         name: form.name,
         description: form.description,
-        icon: form.icon,
+        icon: normalizeIconClass(form.icon),
         categoryId: form.categoryId || undefined,
         defaultPostVisibility: uiTypeToApi(form.type),
         membersOnlyPosting: form.type === 'Vertical',
@@ -73,7 +121,7 @@ function prepareEdit(community) {
     id: community.id,
     name: community.name || '',
     description: community.description || '',
-    icon: community.icon || community.iconClass || '',
+    icon: normalizeIconClass(community.icon || community.iconClass),
     type: apiTypeToUi(community.defaultPostVisibility),
   })
   editMessage.value = ''
@@ -87,7 +135,7 @@ async function saveEdit() {
       body: {
         name: editForm.name,
         description: editForm.description,
-        icon: editForm.icon,
+        icon: normalizeIconClass(editForm.icon),
         defaultPostVisibility: uiTypeToApi(editForm.type),
         membersOnlyPosting: editForm.type === 'Vertical',
       },
@@ -145,7 +193,24 @@ onMounted(async () => {
         </div>
         <div class="col-md-8 mb-3">
           <label>Enter Icon name:</label>
-          <input v-model="form.icon" type="text" class="form-control" placeholder="<i class=las la-pen></i>">
+          <div class="dropdown">
+            <button class="form-control text-start d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
+              <span><i :class="normalizeIconClass(form.icon)" class="me-2"></i>{{ iconLabel(form.icon) }}</span>
+              <i class="la la-angle-down"></i>
+            </button>
+            <ul class="dropdown-menu w-100" style="max-height: 320px; overflow-y: auto;">
+              <li class="px-2 py-2">
+                <input v-model="iconSearch" type="text" class="form-control form-control-sm" placeholder="Search icons" @click.stop @keydown.stop>
+              </li>
+              <li v-for="icon in filteredLineIcons" :key="icon.value">
+                <a class="dropdown-item d-flex align-items-center" href="" @click.prevent="selectIcon(form, icon.value)">
+                  <i :class="icon.value" class="me-2 fs-5"></i>
+                  <span>{{ icon.label }}</span>
+                </a>
+              </li>
+              <li v-if="filteredLineIcons.length === 0" class="dropdown-item text-muted">No icons found</li>
+            </ul>
+          </div>
         </div>
         <div class="col-md-8 mb-3">
           <label class="form-label">Select type of Community:</label>
@@ -227,7 +292,24 @@ onMounted(async () => {
             </div>
             <div class="col-md-8 mb-3">
               <label>Enter Icon name:</label>
-              <input v-model="editForm.icon" type="text" class="form-control" placeholder="<i class=las la-pen></i>">
+              <div class="dropdown">
+                <button class="form-control text-start d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
+                  <span><i :class="normalizeIconClass(editForm.icon)" class="me-2"></i>{{ iconLabel(editForm.icon) }}</span>
+                  <i class="la la-angle-down"></i>
+                </button>
+                <ul class="dropdown-menu w-100" style="max-height: 320px; overflow-y: auto;">
+                  <li class="px-2 py-2">
+                    <input v-model="editIconSearch" type="text" class="form-control form-control-sm" placeholder="Search icons" @click.stop @keydown.stop>
+                  </li>
+                  <li v-for="icon in filteredEditLineIcons" :key="icon.value">
+                    <a class="dropdown-item d-flex align-items-center" href="" @click.prevent="selectIcon(editForm, icon.value, true)">
+                      <i :class="icon.value" class="me-2 fs-5"></i>
+                      <span>{{ icon.label }}</span>
+                    </a>
+                  </li>
+                  <li v-if="filteredEditLineIcons.length === 0" class="dropdown-item text-muted">No icons found</li>
+                </ul>
+              </div>
             </div>
             <div class="col-md-8 mb-3">
               <label class="form-label">Select type of Community:</label>
