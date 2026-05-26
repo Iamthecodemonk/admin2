@@ -44,6 +44,10 @@ const closeOpenDropdowns = () => {
   document.querySelectorAll('.dropdown-menu.show').forEach((menu) => {
     menu.classList.remove('show')
     menu.style.display = ''
+    menu.style.position = ''
+    menu.style.top = ''
+    menu.style.right = ''
+    menu.style.left = ''
   })
 }
 
@@ -82,6 +86,14 @@ const handleDocumentClick = (event) => {
     if (menu && !isOpen) {
       menu.classList.add('show')
       menu.style.display = 'block'
+      if (dropdownToggle.closest('.table-responsive')) {
+        const rect = dropdownToggle.getBoundingClientRect()
+        const menuWidth = Math.max(menu.offsetWidth, 160)
+        menu.style.position = 'fixed'
+        menu.style.top = `${rect.bottom + 4}px`
+        menu.style.left = `${Math.max(8, rect.right - menuWidth)}px`
+        menu.style.right = 'auto'
+      }
     }
     return
   }

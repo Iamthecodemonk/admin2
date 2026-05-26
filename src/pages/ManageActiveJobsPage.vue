@@ -2,31 +2,44 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import AppHeader from '../components/AppHeader.vue'
 import { apiRequest } from '../services/api'
-import { useApiList } from '../composables/useApiList'
+import { jobCompanyName, jobDetailsRows, jobEmail, jobEndDate, jobTitle, loadJobsByBucket, updateAdminJobStatus } from '../services/jobs'
 
 const type = ref('regular')
 const search = ref('')
 const userNames = ref({})
-const regular = useApiList('/api/jobs', { per_page: 50, status: 'active' })
-const freelance = useApiList('/api/freelance-jobs', { per_page: 50, status: 'active' })
-const currentList = computed(() => type.value === 'regular' ? regular : freelance)
-const loading = computed(() => currentList.value.loading.value)
-const error = computed(() => currentList.value.error.value)
-const jobs = computed(() => type.value === 'regular' ? regular.items.value : freelance.items.value)
+const regularJobs = ref([])
+const freelanceJobs = ref([])
+const loading = ref(false)
+const error = ref('')
+const selectedJob = ref(null)
+const jobs = computed(() => type.value === 'regular' ? regularJobs.value : freelanceJobs.value)
 const filteredJobs = computed(() => {
   const q = search.value.toLowerCase()
-  return jobs.value.filter((job) => !q || [job.applicationEndDate, job.applicationEmail, job.location, job.title, job.companyName].filter(Boolean).join(' ').toLowerCase().includes(q))
+  return jobs.value.filter((job) => !q || [jobEndDate(job), jobEmail(job), job.location, job.title, jobCompanyName(job)].filter(Boolean).join(' ').toLowerCase().includes(q))
 })
 
 async function loadCurrentJobs() {
-  await currentList.value.load()
-  await loadPosterNames()
+  loading.value = true
+  error.value = ''
+  try {
+    const loadedJobs = await loadJobsByBucket(type.value, 'active')
+    if (type.value === 'regular') regularJobs.value = loadedJobs
+    else freelanceJobs.value = loadedJobs
+    await loadPosterNames()
+  } catch (err) {
+    error.value = err.message
+  } finally {
+    loading.value = false
+  }
 }
 
 async function updateStatus(job, status) {
-  const base = type.value === 'regular' ? '/api/jobs' : '/api/freelance-jobs'
-  await apiRequest(`${base}/${job.id}/status`, { method: 'PATCH', body: { status } })
+  await updateAdminJobStatus(type.value, job, status)
   await loadCurrentJobs()
+}
+
+function showJobDetails(job) {
+  selectedJob.value = job
 }
 
 function nestedPosterName(job) {
@@ -108,14 +121,14 @@ watch(type, loadCurrentJobs)
             <tr v-for="(job, index) in filteredJobs" :key="job.id">
               <td>{{ index + 1 }}</td>
               <td><a href="" @click.prevent>{{ posterName(job) }}</a></td>
-              <td><a href="" @click.prevent>{{ job.companyName }}</a></td>
+              <td><a href="" data-bs-toggle="modal" data-bs-target="#activeJobDetailsModal" @click.prevent="showJobDetails(job)">{{ jobCompanyName(job) || jobTitle(job) }}</a></td>
               <td>{{ job.location }}</td>
-              <td>{{ job.applicationEmail || job.senderEmail }}</td>
-              <td>{{ job.applicationEndDate }}</td>
+              <td>{{ jobEmail(job) }}</td>
+              <td>{{ jobEndDate(job) }}</td>
               <td>{{ job.status }}</td>
               <td>
                 <div class="dropdown">
-                  <i class="la la-list-ul dropdow-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i>
+                  <i class="la la-list-ul dropdown-toggle" data-bs-toggle="dropdown" style="font-size: 25px;"></i>
                   <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="" @click.prevent="updateStatus(job, 'suspended')">Suspend</a></li>
                     <li><a class="dropdown-item" href="" @click.prevent="updateStatus(job, 'active')">Unsuspend</a></li>
@@ -132,4 +145,28 @@ watch(type, loadCurrentJobs)
   </section>
 
   <div id="back-to-top" data-bs-toggle="tooltip" data-placement="top" title="Return to top"><i class="la la-arrow-up"></i></div>
+
+  <div class="modal" id="activeJobDetailsModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Job Details</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <table v-if="selectedJob" class="table table-bordered">
+            <tbody>
+              <tr v-for="[label, value] in jobDetailsRows(selectedJob, posterName(selectedJob))" :key="label">
+                <th style="width: 180px;">{{ label }}</th>
+                <td>{{ value }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
